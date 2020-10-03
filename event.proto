@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+/* Describes a serialized object */
+message SerializedObject {
+
+    /* The type identifier of the serialized object. */
+    string type = 1;
+
+    /* The revision of the serialized form of the given type. */
+    string revision = 2;
+
+    /* The actual data representing the object in serialized form. */
+    bytes data = 3;
+}
+
+/* The value of a MetaData entry. */
+message MetaDataValue {
+
+    /* The data of the MetaData entry, depending on the type of data it contains. */
+    oneof data {
+
+        /* The text value of the Meta Data entry. */
+        string text_value = 1;
+
+        /* The numeric value of the Meta Data entry. */
+        sint64 number_value = 2;
+
+        /* The boolean value of the Meta Data entry. */
+        bool boolean_value = 3;
+
+        /* The floating point value of the Meta Data entry. */
+        double double_value = 4;
+
+        /* The binary value of the Meta Data entry. */
+        SerializedObject bytes_value = 5;
+    }
+}
+
+/* Message containing the information of an Event */
+message Event {
+
+    /* The unique identifier of this event */
+    string message_identifier = 1;
+
+    /* The identifier of the Aggregate instance that published this event, if any */
+    string aggregate_identifier = 2;
+
+    /* The sequence number of the Event in the Aggregate instance that published it, if any */
+    int64 aggregate_sequence_number = 3;
+
+    /* The Type of the Aggregate instance that published this Event, if any */
+    string aggregate_type = 4;
+
+    /* The timestamp of the Event */
+    int64 timestamp = 5;
+
+    /* The Payload of the Event */
+    SerializedObject payload = 6;
+
+    /* The Meta Data of the Event */
+    map<string, MetaDataValue> meta_data = 7;
+
+    /* Flag indicating whether the Event is a snapshot Event */
+    bool snapshot = 8;
+}
+
+
