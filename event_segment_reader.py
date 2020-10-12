@@ -1,24 +1,24 @@
 import struct
-import event_pb2
 import os
+import event_pb2
 
 
-class EventSegment:
+class EventSegmentReader:
 
     def __init__(self, path):
+        if not os.path.exists(path):
+            raise ValueError('File does not exist')
         self.path = path
-
 
     def read_event(self, event_number):
         if event_number < 0:
-            raise ValueError('event_number must be positive')
-        
+            raise ValueError('Event number must be positive')
+
         count = 0
         for event in self.read_events():
             if count == event_number:
                 return event
             count += 1
-
 
     def read_events(self):
         with open(self.path, 'rb') as f:
@@ -27,7 +27,6 @@ class EventSegment:
 
             while not self._is_eof(f):
                 yield from self._read_transaction(f)
-
 
     def _read_transaction(self, f):
         size = struct.unpack('>i', f.read(4))
@@ -40,7 +39,6 @@ class EventSegment:
 
         f.read(4)
 
-
     def _read_event(self, f):
         size = struct.unpack('>i', f.read(4))
 
@@ -49,7 +47,6 @@ class EventSegment:
 
         event.ParseFromString(event_data)
         yield event
-
 
     def _is_eof(self, f):
         current_position = f.tell()
